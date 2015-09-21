@@ -37,12 +37,16 @@ namespace Fhirbase.Net.Api
         /// <returns></returns>
         Resource Read(ResourceKey key);
 
+        T Read<T>(ResourceKey key) where T : Resource;
+
         /// <summary>
         /// Read the state of a specific version of the resource
         /// </summary>
         /// <param name="key">[type] [id] [vid]</param>
         /// <returns></returns>
         Resource VRead(ResourceKey key);
+
+        T VRead<T>(ResourceKey key) where T : Resource;
 
         /// <summary>
         /// Update an existing resource by its id (or create it if it is new)
@@ -51,6 +55,8 @@ namespace Fhirbase.Net.Api
         /// <returns></returns>
         Resource Update(Resource resource);
 
+        T Update<T>(T resource) where T : Resource;
+
         /// <summary>
         /// Delete a resource
         /// </summary>
@@ -58,12 +64,16 @@ namespace Fhirbase.Net.Api
         /// <returns></returns>
         Resource Delete(ResourceKey key);
 
+        T Delete<T>(ResourceKey key) where T : Resource;
+
         /// <summary>
         /// Create a new resource with a server assigned id
         /// </summary>
         /// <param name="resource">[type]</param>
         /// <returns></returns>
         Resource Create(Resource resource);
+
+        T Create<T>(T resource) where T : Resource;
 
         #endregion
 

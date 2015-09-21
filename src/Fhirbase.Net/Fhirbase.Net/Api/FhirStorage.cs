@@ -30,6 +30,11 @@ namespace Fhirbase.Net.Api
                 .Cast<bool>();
         }
 
+        public T Delete<T>(ResourceKey key) where T : Resource
+        {
+            return (T) Delete(key);
+        }
+
         public Resource Create(Resource entry)
         {
             var resourceJson = FHIRbaseHelper.FhirResourceToJson(entry);
@@ -38,6 +43,11 @@ namespace Fhirbase.Net.Api
                 .Cast<string>();
 
             return FHIRbaseHelper.JsonToFhirResource(resource);
+        }
+
+        public T Create<T>(T resource) where T : Resource
+        {
+            return (T) Create((Resource)resource);
         }
 
         public Boolean IsDeleted(ResourceKey key)
@@ -57,6 +67,11 @@ namespace Fhirbase.Net.Api
                .Cast<bool>();
 
             return result;
+        }
+
+        public T Update<T>(T resource) where T : Resource
+        {
+            return (T) Update((Resource)resource);
         }
 
         public Resource Delete(ResourceKey key)
@@ -105,6 +120,11 @@ namespace Fhirbase.Net.Api
             return FHIRbaseHelper.JsonToFhirResource(readedResponse);
         }
 
+        public T Read<T>(ResourceKey key) where T : Resource
+        {
+            return (T)Read(key);
+        }
+
         public Resource VRead(ResourceKey key)
         {
             var readedResponse = FHIRbase.Call("fhir.vread")
@@ -113,6 +133,11 @@ namespace Fhirbase.Net.Api
                 .Cast<string>();
 
             return FHIRbaseHelper.JsonToFhirResource(readedResponse);
+        }
+
+        public T VRead<T>(ResourceKey key) where T : Resource
+        {
+            return (T) VRead(key);
         }
 
         public Resource Update(Resource resource)
