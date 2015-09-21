@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fhirbase.Net.Api;
+using Fhirbase.Net.Common;
 using Fhirbase.Net.SearchHelpers;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
@@ -38,7 +39,7 @@ namespace Fhirbase.Net.Test
                 Use = ContactPoint.ContactPointUse.Mobile,
                 Value = "123456789"
             });
-
+            
             RemovedPatient = FHIRbase.Search("Patient");
             foreach (var entryComponent in RemovedPatient.Entry)
                 FHIRbase.Delete(entryComponent.Resource);

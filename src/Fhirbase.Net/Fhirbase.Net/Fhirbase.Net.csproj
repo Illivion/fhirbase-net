@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\FhirSchema.cs" />
     <Compile Include="Api\FhirStorage.cs" />
     <Compile Include="Common\FHIRbase.cs" />
     <Compile Include="Common\PostgresHelper.cs" />

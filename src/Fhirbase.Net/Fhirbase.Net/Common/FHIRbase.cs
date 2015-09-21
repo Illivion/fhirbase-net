@@ -10,9 +10,14 @@ namespace Fhirbase.Net.Common
         /// </summary>
         /// <param name="fhirbaseFunc"></param>
         /// <returns></returns>
-        public static FHIRbaseFunc Call(string fhirbaseFunc)
+        public static FhirBaseFunction Call(string fhirbaseFunc)
         {
-            return new FHIRbaseFunc {Name = fhirbaseFunc};
+            return new FhirBaseFunction {Name = fhirbaseFunc};
+        }
+
+        public static FhirBaseFunction Call(string schema, string fhirbaseFunc)
+        {
+            return new FhirBaseFunction {Name = schema + "." + fhirbaseFunc};
         }
 
         /// <summary>
@@ -21,7 +26,7 @@ namespace Fhirbase.Net.Common
         /// <param name="func"></param>
         /// <param name="textParameter"></param>
         /// <returns></returns>
-        public static FHIRbaseFunc WithText(this FHIRbaseFunc func, string textParameter)
+        public static FhirBaseFunction WithText(this FhirBaseFunction func, string textParameter)
         {
             func.Parameters.Add(PostgresHelper.Text(textParameter));
             return func;
@@ -33,19 +38,19 @@ namespace Fhirbase.Net.Common
         /// <param name="func"></param>
         /// <param name="jsonParameter"></param>
         /// <returns></returns>
-        public static FHIRbaseFunc WithJsonb(this FHIRbaseFunc func, string jsonParameter)
+        public static FhirBaseFunction WithJsonb(this FhirBaseFunction func, string jsonParameter)
         {
             func.Parameters.Add(PostgresHelper.Jsonb(jsonParameter));
             return func;
         }
 
-        public static FHIRbaseFunc WithTextArray(this FHIRbaseFunc func, string[] resources)
+        public static FhirBaseFunction WithTextArray(this FhirBaseFunction func, string[] resources)
         {
             func.Parameters.Add(PostgresHelper.TextArray(resources));
             return func;
         }
 
-        public static FHIRbaseFunc WithInt(this FHIRbaseFunc func, int limit)
+        public static FhirBaseFunction WithInt(this FhirBaseFunction func, int limit)
         {
             func.Parameters.Add(PostgresHelper.Int(limit));
             return func;
@@ -57,14 +62,14 @@ namespace Fhirbase.Net.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static T Cast<T>(this FHIRbaseFunc func)
+        public static T Cast<T>(this FhirBaseFunction func)
         {
             return (T)PostgresHelper.Func(func.Name, func.Parameters.ToArray());
         }
 
-        public class FHIRbaseFunc
+        public class FhirBaseFunction
         {
-            public FHIRbaseFunc()
+            public FhirBaseFunction()
             {
                 Parameters = new List<NpgsqlParameter>();
             }
