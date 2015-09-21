@@ -9,26 +9,26 @@ namespace Fhirbase.Net.Api
     /// Fhirbase RESTful+ API
     /// </summary>
     /// <exception cref="FHIRbaseException"></exception>
-    public interface IFHIRbase
+    public interface IFhirStorage
     {
-        #region Generation
+        #region :: Generation ::
 
         /// <summary>
         /// Generate tables for resources
         /// </summary>
         /// <param name="resources"></param>
         /// <returns></returns>
-        string GenerateTables(params string[] resources);
+        String GenerateTables(params string[] resources);
 
         /// <summary>
         /// Generate tables for DSTU2 resources
         /// </summary>
         /// <returns></returns>
-        string GenerateTables();
+        String GenerateTables();
 
         #endregion
 
-        #region CRUD
+        #region :: CRUD ::
 
         /// <summary>
         /// Read the current state of the resource
@@ -64,10 +64,10 @@ namespace Fhirbase.Net.Api
         /// <param name="resource">[type]</param>
         /// <returns></returns>
         Resource Create(Resource resource);
-        
+
         #endregion
 
-        #region History
+        #region :: History ::
 
         /// <summary>
         /// Retrieve the update history for a particular resource
@@ -95,33 +95,33 @@ namespace Fhirbase.Net.Api
 
         #endregion
 
-        #region Resource Utility
+        #region :: Resource Utility ::
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        bool IsExists(ResourceKey key);
+        Boolean IsExists(ResourceKey key);
 
-        bool IsExists(Resource resource);
+        Boolean IsExists(Resource resource);
 
-        bool IsExists(string resourceName, string id);
+        Boolean IsExists(string resourceName, string id);
 
-        bool IsDeleted(ResourceKey key);
+        Boolean IsDeleted(ResourceKey key);
 
         /// <summary>
         /// Check resource is latest version
         /// </summary>
         /// <param name="key">[type] [id] [vid]</param>
         /// <returns></returns>
-        bool IsLatest(ResourceKey key);
+        Boolean IsLatest(ResourceKey key);
 
         Resource ReadLastVersion(ResourceKey key);
 
         #endregion
 
-        #region Search
+        #region :: Search ::
 
         /// <summary>
         /// Search the resource type based on some filter criteria
@@ -134,7 +134,7 @@ namespace Fhirbase.Net.Api
 
         #endregion
 
-        #region Conformance
+        #region :: Conformance ::
 
         /// <summary>
         /// Create FHIR-conformance
@@ -147,7 +147,7 @@ namespace Fhirbase.Net.Api
 
         #endregion
 
-        #region Transactions
+        #region :: Transactions ::
 
         /// <summary>
         /// Update, create or delete a set of resources as a single transaction
@@ -158,25 +158,25 @@ namespace Fhirbase.Net.Api
 
         #endregion
 
-        #region Indexing
+        #region :: Indexing ::
 
-        string IndexSearchParam(string resource, string name);
+        String IndexSearchParam(string resource, string name);
 
-        long DropIndexSearchParams(string resource, string name);
+        Int64 DropIndexSearchParams(string resource, string name);
 
-        string[] IndexResource(string resource);
+        String[] IndexResource(string resource);
 
-        long DropResourceIndexes(string resource);
+        Int64 DropResourceIndexes(string resource);
 
-        string[] IndexAllResources();
+        String[] IndexAllResources();
 
-        long DropAllResourceIndexes();
+        Int64 DropAllResourceIndexes();
 
         #endregion
 
-        #region Admin Disk Functions
+        #region :: Admin Disk Functions ::
 
-        string AdminDiskUsageTop(int limit);
+        String AdminDiskUsageTop(int limit);
 
         #endregion
     }

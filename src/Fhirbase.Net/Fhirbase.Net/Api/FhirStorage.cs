@@ -7,14 +7,14 @@ using Monads.NET;
 
 namespace Fhirbase.Net.Api
 {
-    public class FHIRbaseApi : IFHIRbase
+    public class FhirStorage : IFhirStorage
     {
-        public bool IsExists(ResourceKey key)
+        public Boolean IsExists(ResourceKey key)
         {
             return IsExists(key.TypeName, key.ResourceId);
         }
 
-        public bool IsExists(Resource entry)
+        public Boolean IsExists(Resource entry)
         {
             return entry != null
                 && !string.IsNullOrEmpty(entry.TypeName)
@@ -22,7 +22,7 @@ namespace Fhirbase.Net.Api
                 && IsExists(entry.TypeName, entry.Id);
         }
 
-        public bool IsExists(string resourceName, string id)
+        public Boolean IsExists(string resourceName, string id)
         {
             return FHIRbase.Call("fhir.is_exists")
                 .WithText(resourceName)
@@ -40,7 +40,7 @@ namespace Fhirbase.Net.Api
             return FHIRbaseHelper.JsonToFhirResource(resource);
         }
 
-        public bool IsDeleted(ResourceKey key)
+        public Boolean IsDeleted(ResourceKey key)
         {
             return FHIRbase.Call("fhir.is_deleted")
                 .WithText(key.TypeName)
@@ -48,7 +48,7 @@ namespace Fhirbase.Net.Api
                 .Cast<bool>();
         }
 
-        public bool IsLatest(ResourceKey key)
+        public Boolean IsLatest(ResourceKey key)
         {
             var result = FHIRbase.Call("fhir.is_latest")
                .WithText(key.TypeName)
@@ -74,7 +74,7 @@ namespace Fhirbase.Net.Api
         /// </summary>
         /// <param name="resources"></param>
         /// <returns></returns>
-        public string GenerateTables(params string[] resources)
+        public String GenerateTables(params string[] resources)
         {
             var result = FHIRbase.Call("fhir.generate_tables")
                 .WithTextArray(resources)
@@ -87,7 +87,7 @@ namespace Fhirbase.Net.Api
         /// Generate tables for DSTU2 resources
         /// </summary>
         /// <returns></returns>
-        public string GenerateTables()
+        public String GenerateTables()
         {
             var result = FHIRbase.Call("fhir.generate_tables")
                 .Cast<string>();
@@ -231,7 +231,7 @@ namespace Fhirbase.Net.Api
             return FHIRbaseHelper.JsonToBundle(fhirbaseResult);
         }
 
-        public string IndexSearchParam(string resource, string name)
+        public String IndexSearchParam(string resource, string name)
         {
             var indexSearchParamsResult = FHIRbase.Call("fhir.index_search_param")
                 .WithText(resource)
@@ -241,7 +241,7 @@ namespace Fhirbase.Net.Api
             return indexSearchParamsResult;
         }
 
-        public long DropIndexSearchParams(string resource, string name)
+        public Int64 DropIndexSearchParams(string resource, string name)
         {
             var dropIndexSearchParamsResult = FHIRbase.Call("fhir.drop_index_search_param")
                 .WithText(resource)
@@ -251,7 +251,7 @@ namespace Fhirbase.Net.Api
             return dropIndexSearchParamsResult;
         }
 
-        public string[] IndexResource(string resource)
+        public String[] IndexResource(string resource)
         {
             var indexResiurceResult = FHIRbase.Call("fhir.index_resource")
                 .WithText(resource)
@@ -260,7 +260,7 @@ namespace Fhirbase.Net.Api
             return indexResiurceResult;
         }
 
-        public long DropResourceIndexes(string resource)
+        public Int64 DropResourceIndexes(string resource)
         {
             var dropResourceIndexesResult = FHIRbase.Call("fhir.drop_resource_indexes")
                 .WithText(resource)
@@ -269,7 +269,7 @@ namespace Fhirbase.Net.Api
             return dropResourceIndexesResult;
         }
 
-        public string[] IndexAllResources()
+        public String[] IndexAllResources()
         {
             var indexAllResourcesResult = FHIRbase.Call("fhir.index_all_resources")
                 .Cast<string[]>();
@@ -277,7 +277,7 @@ namespace Fhirbase.Net.Api
             return indexAllResourcesResult;
         }
 
-        public long DropAllResourceIndexes()
+        public Int64 DropAllResourceIndexes()
         {
             var dropAllResourceIndexesResult = FHIRbase.Call("fhir.drop_all_resource_indexes")
                 .Cast<long>();
@@ -285,7 +285,7 @@ namespace Fhirbase.Net.Api
             return dropAllResourceIndexesResult;
         }
 
-        public string AdminDiskUsageTop(int limit)
+        public String AdminDiskUsageTop(int limit)
         {
             var adminDiskUsageTopResult = FHIRbase.Call("fhir.admin_disk_usage_top")
                 .WithInt(limit)

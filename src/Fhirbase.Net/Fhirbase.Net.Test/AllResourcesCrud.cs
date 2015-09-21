@@ -22,7 +22,7 @@ namespace Fhirbase.Net.Test
         {
             get
             {
-                FHIRbase = new FHIRbaseApi();
+                FHIRbase = new FhirStorage();
                 ResourceTestHelper.ClearExtractPath(ExtractPath);
                 ResourceTestHelper.UnzipExamples(ZipPath, ExtractPath);
 
@@ -30,12 +30,12 @@ namespace Fhirbase.Net.Test
             }
         }
 
-        public IFHIRbase FHIRbase { get; set; }
+        public IFhirStorage FHIRbase { get; set; }
 
         [TestFixtureSetUp]
         public void Init()
         {
-            FHIRbase = new FHIRbaseApi();
+            FHIRbase = new FhirStorage();
         }
 
         [TestCaseSource("Resources")]

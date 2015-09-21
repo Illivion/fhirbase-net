@@ -14,7 +14,7 @@ namespace Fhirbase.Net.Test
     [TestFixture]
     public class ApiTest
     {
-        public IFHIRbase FHIRbase { get; set; }
+        public IFhirStorage FHIRbase { get; set; }
 
         public Patient CommonPatient { get; set; }
 
@@ -27,7 +27,7 @@ namespace Fhirbase.Net.Test
         [TestFixtureSetUp]
         public void Test_Init()
         {
-            FHIRbase = new FHIRbaseApi();
+            FHIRbase = new FhirStorage();
             CommonPatient = (Patient) FhirParser.ParseFromJson(File.ReadAllText("Examples/common_patient.json"));
 
             SimplePatient = new Patient();
