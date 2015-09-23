@@ -1,6 +1,6 @@
 using System;
 
-namespace Fhirbase.Net.Api
+namespace Fhirbase.Net.DataModel
 {
     public static class FhirSchema
     {

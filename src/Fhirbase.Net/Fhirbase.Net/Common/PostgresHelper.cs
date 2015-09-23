@@ -8,39 +8,45 @@ namespace Fhirbase.Net.Common
 {
     internal class PostgresHelper
     {
-        public static object Func(string funcName, params NpgsqlParameter[] parameters)
+        public static object Function(string connectionString, string functionName, params NpgsqlParameter[] parameters)
         {
-            var conn = new NpgsqlConnection(GetFHIRbaseConnectionString());
-            conn.Open();
+            var npgsqlConnection = OpenConnection(connectionString);
 
             try
             {
-                var command = new NpgsqlCommand(funcName, conn) { CommandType = CommandType.StoredProcedure };
+                var command = new NpgsqlCommand(functionName, npgsqlConnection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
                 command.Parameters.AddRange(parameters);
+                
                 var result = command.ExecuteScalar();
+
                 return result;
             }
             catch (Exception ex)
             {
-                throw new FHIRbaseException(
-                    string.Format("Call {0} FHIRbase function failed. Reason {1}", funcName, ex.Message),
+                throw new FhibaseException(
+                    string.Format("Call {0} FHIRbase function failed. Reason {1}", functionName, ex.Message),
                     ex);
             }
             finally
             {
-                conn.Close();
+                npgsqlConnection.Close();
             }
         }
 
-        private static string GetFHIRbaseConnectionString()
+        private static NpgsqlConnection OpenConnection(string connectionString)
         {
-            if (ConfigurationManager.ConnectionStrings["FhirbaseConnection"] == null)
-                throw new FHIRbaseException("Add \"FhirbaseConnection\" connection string in app.config or web.config");
+            var npgsqlConnection = new NpgsqlConnection(connectionString);
 
-            return ConfigurationManager.ConnectionStrings["FhirbaseConnection"].ConnectionString;
+            npgsqlConnection.Open();
+
+            return npgsqlConnection;
         }
 
-        public static NpgsqlParameter Text(string text)
+        public static NpgsqlParameter TextParam(string text)
         {
             return new NpgsqlParameter
             {
@@ -58,7 +64,7 @@ namespace Fhirbase.Net.Common
             };
         }
 
-        public static NpgsqlParameter TextArray(string[] resources)
+        public static NpgsqlParameter StringArray(string[] resources)
         {
             return new NpgsqlParameter
             {

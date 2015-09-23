@@ -46,6 +46,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,17 +54,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\FhirbaseContext.cs" />
     <Compile Include="DataModel\FhirSchema.cs" />
     <Compile Include="Api\FhirStorage.cs" />
-    <Compile Include="Common\FHIRbase.cs" />
     <Compile Include="Common\PostgresHelper.cs" />
-    <Compile Include="Common\FHIRbaseException.cs" />
-    <Compile Include="Common\FHIRbaseHelper.cs" />
+    <Compile Include="Common\FhibaseException.cs" />
+    <Compile Include="Common\ResourceDataHelper.cs" />
     <Compile Include="Api\IFhirStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\ResourceKey.cs" />
-    <Compile Include="SearchHelpers\HistoryParameters.cs" />
-    <Compile Include="SearchHelpers\SearchParameters.cs" />
+    <Compile Include="Helpers\History.cs" />
+    <Compile Include="Helpers\HistoryParameters.cs" />
+    <Compile Include="Helpers\Search.cs" />
+    <Compile Include="Helpers\SearchParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

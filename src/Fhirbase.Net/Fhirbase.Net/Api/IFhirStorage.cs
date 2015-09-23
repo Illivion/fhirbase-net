@@ -1,6 +1,6 @@
 ﻿using System;
 using Fhirbase.Net.Common;
-using Fhirbase.Net.SearchHelpers;
+using Fhirbase.Net.Helpers;
 using Hl7.Fhir.Model;
 
 namespace Fhirbase.Net.Api
@@ -8,7 +8,7 @@ namespace Fhirbase.Net.Api
     /// <summary>
     /// Fhirbase RESTful+ API
     /// </summary>
-    /// <exception cref="FHIRbaseException"></exception>
+    /// <exception cref="FhibaseException"></exception>
     public interface IFhirStorage
     {
         #region :: Generation ::

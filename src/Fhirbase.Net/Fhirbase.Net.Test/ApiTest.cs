@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Fhirbase.Net.Api;
 using Fhirbase.Net.Common;
-using Fhirbase.Net.SearchHelpers;
+using Fhirbase.Net.Helpers;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
@@ -24,11 +24,13 @@ namespace Fhirbase.Net.Test
         public List<Patient> SearchPatients { get; set; }
 
         public Bundle RemovedPatient { get; set; }
-            
+
+        private const String ConnectionString = "FhirbaseConnection";
+
         [TestFixtureSetUp]
         public void Test_Init()
         {
-            FHIRbase = new FhirStorage();
+            FHIRbase = new FhirStorage(ConnectionString);
             CommonPatient = (Patient) FhirParser.ParseFromJson(File.ReadAllText("Examples/common_patient.json"));
 
             SimplePatient = new Patient();

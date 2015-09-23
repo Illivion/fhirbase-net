@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using Fhirbase.Net.Common;
-using Fhirbase.Net.SearchHelpers;
+using Fhirbase.Net.DataModel;
+using Fhirbase.Net.Helpers;
 using Hl7.Fhir.Model;
 using Monads.NET;
 
@@ -9,18 +11,44 @@ namespace Fhirbase.Net.Api
 {
     public class FhirStorage : IFhirStorage
     {
+        private readonly FhirbaseContext _context;
+
+        public FhirStorage(string nameOrConnectionString)
+        {
+            var connectionString = GetConnectionString(nameOrConnectionString);
+
+            _context = new FhirbaseContext(connectionString);
+        }
+
+        private string GetConnectionString(string nameOrConnectionString)
+        {
+            var connectionString = "";
+
+            if (nameOrConnectionString.IndexOf('=') >= 0)
+            {
+                connectionString = nameOrConnectionString;
+            }
+            else
+            {
+                connectionString = ConfigurationManager.ConnectionStrings[nameOrConnectionString].ConnectionString;
+            }
+            return connectionString;
+        }
+
         #region :: CRUD ::
 
         public Resource Create(Resource entry)
         {
-            var resourceJson = FHIRbaseHelper.FhirResourceToJson(entry);
+            var resourceJson = ResourceDataHelper.FhirResourceToJson(entry);
 
-            var resource = FHIRbase
+            var createdResourceJson = _context
                 .Call(FhirSchema.Name, FhirSchema.Func.Create)
-                .WithJsonb(resourceJson)
+                .WithJson(resourceJson)
                 .Cast<String>();
 
-            return FHIRbaseHelper.JsonToFhirResource(resource);
+            var createdResource = ResourceDataHelper.JsonToFhirResource(createdResourceJson);
+
+            return createdResource;
         }
 
         public T Create<T>(T resource) where T : Resource
@@ -30,13 +58,15 @@ namespace Fhirbase.Net.Api
 
         public Resource Read(ResourceKey key)
         {
-            var resourceJson = FHIRbase
+            var resourceJson = _context
                 .Call(FhirSchema.Name, FhirSchema.Func.Read)
-                .WithText(key.TypeName)
-                .WithText(key.ResourceId)
+                .WithString(key.TypeName)
+                .WithString(key.ResourceId)
                 .Cast<string>();
 
-            return FHIRbaseHelper.JsonToFhirResource(resourceJson);
+            var resource = ResourceDataHelper.JsonToFhirResource(resourceJson);
+
+            return resource;
         }
 
         public T Read<T>(ResourceKey key) where T : Resource
@@ -46,13 +76,15 @@ namespace Fhirbase.Net.Api
 
         public Resource VRead(ResourceKey key)
         {
-            var resourceJson = FHIRbase
+            var resourceJson = _context
                 .Call(FhirSchema.Name, FhirSchema.Func.VRead)
-                .WithText(key.TypeName)
-                .WithText(key.VersionId)
+                .WithString(key.TypeName)
+                .WithString(key.VersionId)
                 .Cast<string>();
 
-            return FHIRbaseHelper.JsonToFhirResource(resourceJson);
+            var resource = ResourceDataHelper.JsonToFhirResource(resourceJson);
+
+            return resource;
         }
 
         public T VRead<T>(ResourceKey key) where T : Resource
@@ -62,14 +94,16 @@ namespace Fhirbase.Net.Api
 
         public Resource Update(Resource resource)
         {
-            var resourceJson = FHIRbaseHelper.FhirResourceToJson(resource);
+            var resourceJson = ResourceDataHelper.FhirResourceToJson(resource);
 
-            var updatedResourceJson = FHIRbase
+            var updatedResourceJson = _context
                 .Call(FhirSchema.Name, FhirSchema.Func.Update)
-                .WithJsonb(resourceJson)
+                .WithJson(resourceJson)
                 .Cast<string>();
 
-            return FHIRbaseHelper.JsonToFhirResource(updatedResourceJson);
+            var updatedResource = ResourceDataHelper.JsonToFhirResource(updatedResourceJson);
+
+            return updatedResource;
         }
 
         public T Update<T>(T resource) where T : Resource
@@ -79,13 +113,15 @@ namespace Fhirbase.Net.Api
 
         public Resource Delete(ResourceKey key)
         {
-            var resourceJson = FHIRbase
+            var resourceJson = _context
                 .Call(FhirSchema.Name, FhirSchema.Func.Delete)
-                .WithText(key.TypeName)
-                .WithText(key.ResourceId)
-                .Cast<string>();
+                .WithString(key.TypeName)
+                .WithString(key.ResourceId)
+                .Cast<String>();
 
-            return FHIRbaseHelper.JsonToFhirResource(resourceJson);
+            var deletedResource = ResourceDataHelper.JsonToFhirResource(resourceJson);
+
+            return deletedResource;
         }
 
         public T Delete<T>(ResourceKey key) where T : Resource
@@ -107,57 +143,75 @@ namespace Fhirbase.Net.Api
         public Bundle History(string resourceType, string resourceId, HistoryParameters parameters = null)
         {
             if (parameters == null)
-                parameters = new HistoryParameters();
+            {
+                parameters = HistoryParameters.Empty;
+            }
 
-            var historyResponse = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.History)
-                .WithText(resourceType)
-                .WithText(resourceId)
-                .WithText(parameters.ToString())
-                .Cast<string>();
+            var historyResponse = _context.Call(FhirSchema.Name, FhirSchema.Func.History)
+                .WithString(resourceType)
+                .WithString(resourceId)
+                .WithString(parameters.ToString())
+                .Cast<String>();
 
-            return FHIRbaseHelper.JsonToBundle(historyResponse);
+            var resultBundle = ResourceDataHelper.JsonToBundle(historyResponse);
+
+            return resultBundle;
         }
 
         public Bundle History(string resourceType, HistoryParameters parameters = null)
         {
             if (parameters == null)
-                parameters = new HistoryParameters();
+            {
+                parameters = HistoryParameters.Empty;
+            }
 
-            var historyResponse = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.History)
-                .WithText(resourceType)
-                .WithText(parameters.ToString())
-                .Cast<string>();
+            var historyResponse = _context.Call(FhirSchema.Name, FhirSchema.Func.History)
+                .WithString(resourceType)
+                .WithString(parameters.ToString())
+                .Cast<String>();
 
-            return FHIRbaseHelper.JsonToBundle(historyResponse);
+            var resultBundle = ResourceDataHelper.JsonToBundle(historyResponse);
+
+            return resultBundle;
         }
 
         public Bundle History(HistoryParameters parameters = null)
         {
             if (parameters == null)
-                parameters = new HistoryParameters();
+            {
+                parameters = HistoryParameters.Empty;
+            }
 
-            var historyResponse = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.History)
-                .WithText(parameters.ToString())
-                .Cast<string>();
+            var historyResponse = _context.Call(FhirSchema.Name, FhirSchema.Func.History)
+                .WithString(parameters.ToString())
+                .Cast<String>();
 
-            return FHIRbaseHelper.JsonToBundle(historyResponse);
+            var resultBundle = ResourceDataHelper.JsonToBundle(historyResponse);
+
+            return resultBundle;
         }
 
         #endregion
 
         #region :: Search ::
+
         public Bundle Search(string resource, SearchParameters parameters)
         {
             if (parameters == null)
-                parameters = new SearchParameters();
+            {
+                parameters = SearchParameters.Empty;
+            }
 
             var searchQuery = parameters.ToString();
-            var searchResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.Search)
-                .WithText(resource)
-                .WithText(searchQuery)
-                .Cast<string>();
 
-            return FHIRbaseHelper.JsonToBundle(searchResult);
+            var searchResult = _context.Call(FhirSchema.Name, FhirSchema.Func.Search)
+                .WithString(resource)
+                .WithString(searchQuery)
+                .Cast<String>();
+
+            var resultBundle = ResourceDataHelper.JsonToBundle(searchResult);
+
+            return resultBundle;
         }
 
         #endregion
@@ -171,9 +225,9 @@ namespace Fhirbase.Net.Api
         /// <returns></returns>
         public String GenerateTables(params string[] resources)
         {
-            var result = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.GenTables)
-                .WithTextArray(resources)
-                .Cast<string>();
+            var result = _context.Call(FhirSchema.Name, FhirSchema.Func.GenTables)
+                .WithStringArray(resources)
+                .Cast<String>();
 
             return result;
         }
@@ -184,8 +238,8 @@ namespace Fhirbase.Net.Api
         /// <returns></returns>
         public String GenerateTables()
         {
-            var result = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.GenTables)
-                .Cast<string>();
+            var result = _context.Call(FhirSchema.Name, FhirSchema.Func.GenTables)
+                .Cast<String>();
 
             return result;
         }
@@ -201,89 +255,98 @@ namespace Fhirbase.Net.Api
         /// <returns>JSON with conformance</returns>
         public Conformance Conformance(string cfg = "{}")
         {
-            var conformanceResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.Conformance)
-                .WithJsonb(cfg)
-                .Cast<string>();
+            var conformanceResult = _context.Call(FhirSchema.Name, FhirSchema.Func.Conformance)
+                .WithJson(cfg)
+                .Cast<String>();
 
-            return (Conformance)FHIRbaseHelper.JsonToFhirResource(conformanceResult);
+            var conformanceResource = (Conformance)ResourceDataHelper.JsonToFhirResource(conformanceResult);
+
+            return conformanceResource;
         }
 
         public StructureDefinition StructureDefinition(string resourceName, string cfg = "{}")
         {
-            var sdResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.StructureDefinition)
-                .WithJsonb(cfg)
-                .WithText(resourceName)
-                .Cast<string>();
+            var sdResult = _context.Call(FhirSchema.Name, FhirSchema.Func.StructureDefinition)
+                .WithJson(cfg)
+                .WithString(resourceName)
+                .Cast<String>();
 
-            return (StructureDefinition)FHIRbaseHelper.JsonToFhirResource(sdResult);
+            var structureDefinitionResource = (StructureDefinition)ResourceDataHelper.JsonToFhirResource(sdResult);
+
+            return structureDefinitionResource;
         }
 
         #endregion
 
         #region :: Transactions ::
+
         public Bundle Transaction(Bundle bundle)
         {
-            var transactionJson = FHIRbaseHelper.FhirResourceToJson(bundle);
-            var fhirbaseResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.Transaction)
-                .WithJsonb(transactionJson)
-                .Cast<string>();
+            var transactionJson = ResourceDataHelper.FhirResourceToJson(bundle);
 
-            return FHIRbaseHelper.JsonToBundle(fhirbaseResult);
+            var fhirbaseResult = _context.Call(FhirSchema.Name, FhirSchema.Func.Transaction)
+                .WithJson(transactionJson)
+                .Cast<String>();
+
+            var transactionResult = ResourceDataHelper.JsonToBundle(fhirbaseResult);
+
+            return transactionResult;
         }
 
         #endregion
 
         #region :: Indexing ::
+
         public String IndexSearchParam(string resource, string name)
         {
-            var indexSearchParamsResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IndexSearchParam)
-                .WithText(resource)
-                .WithText(name)
-                .Cast<string>();
+            var indexSearchParamsResult = _context.Call(FhirSchema.Name, FhirSchema.Func.IndexSearchParam)
+                .WithString(resource)
+                .WithString(name)
+                .Cast<String>();
 
             return indexSearchParamsResult;
         }
 
         public Int64 DropIndexSearchParams(string resource, string name)
         {
-            var dropIndexSearchParamsResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.DropIndexSearchParam)
-                .WithText(resource)
-                .WithText(name)
-                .Cast<long>();
+            var dropIndexSearchParamsResult = _context.Call(FhirSchema.Name, FhirSchema.Func.DropIndexSearchParam)
+                .WithString(resource)
+                .WithString(name)
+                .Cast<Int64>();
 
             return dropIndexSearchParamsResult;
         }
 
         public String[] IndexResource(string resource)
         {
-            var indexResiurceResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IndexResource)
-                .WithText(resource)
-                .Cast<string[]>();
+            var indexResiurceResult = _context.Call(FhirSchema.Name, FhirSchema.Func.IndexResource)
+                .WithString(resource)
+                .Cast<String[]>();
 
             return indexResiurceResult;
         }
 
         public Int64 DropResourceIndexes(string resource)
         {
-            var dropResourceIndexesResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.DropResourceIndexes)
-                .WithText(resource)
-                .Cast<long>();
+            var dropResourceIndexesResult = _context.Call(FhirSchema.Name, FhirSchema.Func.DropResourceIndexes)
+                .WithString(resource)
+                .Cast<Int64>();
 
             return dropResourceIndexesResult;
         }
 
         public String[] IndexAllResources()
         {
-            var indexAllResourcesResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IndexAllResources)
-                .Cast<string[]>();
+            var indexAllResourcesResult = _context.Call(FhirSchema.Name, FhirSchema.Func.IndexAllResources)
+                .Cast<String[]>();
 
             return indexAllResourcesResult;
         }
 
         public Int64 DropAllResourceIndexes()
         {
-            var dropAllResourceIndexesResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.DropAllResourceIndexes)
-                .Cast<long>();
+            var dropAllResourceIndexesResult = _context.Call(FhirSchema.Name, FhirSchema.Func.DropAllResourceIndexes)
+                .Cast<Int64>();
 
             return dropAllResourceIndexesResult;
         }
@@ -291,11 +354,12 @@ namespace Fhirbase.Net.Api
         #endregion
 
         #region :: Admin Functions ::
+
         public String AdminDiskUsageTop(int limit)
         {
-            var adminDiskUsageTopResult = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.AdminDiskUsageTop)
-                .WithInt(limit)
-                .Cast<string>();
+            var adminDiskUsageTopResult = _context.Call(FhirSchema.Name, FhirSchema.Func.AdminDiskUsageTop)
+                .WithInt32(limit)
+                .Cast<String>();
 
             return adminDiskUsageTopResult;
         }
@@ -319,30 +383,31 @@ namespace Fhirbase.Net.Api
 
         public Boolean IsExists(string resourceName, string id)
         {
-            return FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IsExists)
-                .WithText(resourceName)
-                .WithText(id)
+            return _context.Call(FhirSchema.Name, FhirSchema.Func.IsExists)
+                .WithString(resourceName)
+                .WithString(id)
                 .Cast<Boolean>();
         }
 
         public Boolean IsDeleted(ResourceKey key)
         {
-            return FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IsDeleted)
-                .WithText(key.TypeName)
-                .WithText(key.ResourceId)
-                .Cast<bool>();
+            return _context.Call(FhirSchema.Name, FhirSchema.Func.IsDeleted)
+                .WithString(key.TypeName)
+                .WithString(key.ResourceId)
+                .Cast<Boolean>();
         }
 
         public Boolean IsLatest(ResourceKey key)
         {
-            var result = FHIRbase.Call(FhirSchema.Name, FhirSchema.Func.IsLatest)
-               .WithText(key.TypeName)
-               .WithText(key.ResourceId)
-               .WithText(key.VersionId)
-               .Cast<bool>();
+            var result = _context.Call(FhirSchema.Name, FhirSchema.Func.IsLatest)
+               .WithString(key.TypeName)
+               .WithString(key.ResourceId)
+               .WithString(key.VersionId)
+               .Cast<Boolean>();
 
             return result;
         }
+
         public Resource ReadLastVersion(ResourceKey key)
         {
             var lastVersion = History(key.TypeName, key.ResourceId)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,11 +19,13 @@ namespace Fhirbase.Net.Test
 
         private const string ExtractPath = "Examples/tests";
 
+        private const String ConnectionString = "FhirbaseConnection";
+
         public List<Resource> Resources
         {
             get
             {
-                FHIRbase = new FhirStorage();
+                FHIRbase = new FhirStorage(ConnectionString);
                 ResourceTestHelper.ClearExtractPath(ExtractPath);
                 ResourceTestHelper.UnzipExamples(ZipPath, ExtractPath);
 
@@ -35,7 +38,7 @@ namespace Fhirbase.Net.Test
         [TestFixtureSetUp]
         public void Init()
         {
-            FHIRbase = new FhirStorage();
+            FHIRbase = new FhirStorage(ConnectionString);
         }
 
         [TestCaseSource("Resources")]
