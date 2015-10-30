@@ -1,45 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using Fhirbase.Net.Common;
+using System.Collections.Specialized;
 
-namespace Fhirbase.Net.SearchHelpers
+namespace Fhirbase.Net.Helpers
 {
     public class SearchParameters
     {
-        public List<Tuple<string, string>> Parameters { get; set; }
+        public static readonly SearchParameters Empty = new SearchParameters();
+
+        public SearchParameters()
+        {
+            Parameters = System.Web.HttpUtility.ParseQueryString(String.Empty);
+        }
+
+        public NameValueCollection Parameters { get; set; }
 
         /// <summary>
         /// Возвращает форматированную строку параметров
         /// </summary>
         public override string ToString()
         {
-            return Parameters == null 
-                ? string.Empty 
-                : FHIRbaseHelper.FormatSearchString(Parameters);
-        }
-    }
-
-    public static class Search
-    {
-        public static SearchParameters By(string key, string value)
-        {
-            return new SearchParameters
-            {
-                Parameters = new List<Tuple<string, string>>
-                {
-                    new Tuple<string, string>(key, value)
-                }
-            };
-        }
-
-        public static SearchParameters By(this SearchParameters parameters, string key, string value)
-        {
-            if (parameters.Parameters == null)
-                parameters.Parameters = new List<Tuple<string, string>>();
-
-            parameters.Parameters.Add(new Tuple<string, string>(key, value));
-
-            return parameters;
+            return Parameters?.ToString() ?? String.Empty;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Fhirbase.Net.Helpers
         }
 
         public HistoryParameters() : this(Int32.MinValue, Int32.MinValue) { }
-
+        
         public override String ToString()
         {
             var result = System.Web.HttpUtility.ParseQueryString(String.Empty);

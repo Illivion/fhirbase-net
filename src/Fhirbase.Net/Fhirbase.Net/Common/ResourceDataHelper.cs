@@ -6,7 +6,7 @@ using Hl7.Fhir.Serialization;
 
 namespace Fhirbase.Net.Common
 {
-    public static class FHIRbaseHelper
+    public static class ResourceDataHelper
     {
         public static string FhirResourceToJson(Resource entry)
         {
@@ -17,29 +17,19 @@ namespace Fhirbase.Net.Common
         {
             try
             {
-                return (Resource) FhirParser.ParseFromJson(json);
+                return FhirParser.ParseResourceFromJson(json);
             }
             catch (Exception inner)
             {
-                throw new FHIRbaseException("Cannot parse Fhirbase's json into a feed entry: ", inner);
+                throw new FhibaseException("Cannot parse Fhirbase's json into a feed entry: ", inner);
             }
         }
 
         public static Bundle JsonToBundle(string json)
         {
             var bundle = FhirParser.ParseFromJson(json);
+
             return (Bundle) bundle;
         }
-
-        public static string FormatSearchString(IEnumerable<Tuple<string, string>> parameters)
-        {
-            var sb = new StringBuilder();
-            foreach (var parameter in parameters)
-                sb.Append(string.Format("&{0}={1}", parameter.Item1, parameter.Item2));
-
-            return sb.ToString();
-        }
-
-        //public static 
     }
 }
